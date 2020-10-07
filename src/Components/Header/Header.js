@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import SearchIcon from "@material-ui/icons/Search";
-import { Link } from "react-router-dom";
+import { Link, useHistory  } from "react-router-dom";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import "./Header.css";
 import { useStateValue } from "../../Content/StateProvider";
 import { auth } from "../../firebase";
 import AllProducts from "../../Api/data";
-import SearchDropdown from "../SearchDropdown/SearchDropdown";
 
 function Header() {
+  const history = useHistory();
   const [{ basket, user }, dispatch] = useStateValue();
   const searchData = AllProducts[0] || null;
   const { categoriesOne, categoriesTwo, categoriesThree } = searchData;
@@ -17,7 +17,8 @@ function Header() {
   const [searchResults, setSearchResults] = useState([]);
   const filterResults = (searchTerm) => {
     const resultsData = categories?.filter((productSearch) => {
-      return productSearch.title.toString().toLowerCase().startsWith(searchTerm);
+      return productSearch.title.toString().toUpperCase().startsWith(searchTerm)
+      ||  productSearch.title.toString().toLowerCase().startsWith(searchTerm);
     });
     setSearchResults(resultsData);
   };
@@ -32,6 +33,10 @@ function Header() {
       auth.signOut();
     }
   };
+  const searchProduct = (id) => {
+    setSearchTerm("");
+    history.push(`/searchProduct?id=${id}`);
+  }
   return (
     <div className="container">
       <div className="header">
@@ -83,17 +88,25 @@ function Header() {
         </div>
       </div>
       <div className="dropdown-header">
-        <ul>
-          {searchTerm
-            ? searchResults?.map((product) => {
-                return (
-                  <div>
-                    <SearchDropdown id={product.id} title={product.title} />
-                  </div>
-                );
-              })
-            : ""}
-        </ul>
+        <div>
+          <ul>
+            {searchTerm
+              ? searchResults?.map((product) => {
+                  const { id, title } = product;
+                  return (
+                    // <div>
+                    //   {/* <SearchDropdown  key={product.id} id={product.id} title={product.title} /> */}
+                    // </div>
+                    <div className="dropdown">
+                      <div className="dropdown__tag" onClick={() => searchProduct(id)}>
+                        <p className="dropdown__p">{title}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              : ""}
+          </ul>
+        </div>
       </div>
     </div>
   );

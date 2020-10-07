@@ -10,12 +10,12 @@ const SearchProduct = (props) => {
     const { categoriesOne, categoriesTwo, categoriesThree } = searchData;
     const categories = [...categoriesOne, ...categoriesTwo, ...categoriesThree];
     const resultsData = categories?.filter((productSearch) => productSearch.id === productId);
-
     return (
         <div>
             <Header />
             <div className="search__results">
-                <Product 
+                <Product
+                    key={resultsData[0].id}
                     id={resultsData[0].id} 
                     title={resultsData[0].title}
                     price={resultsData[0].price}
@@ -27,4 +27,4 @@ const SearchProduct = (props) => {
     )
 }
 
-export default SearchProduct
+export default SearchProduct;
